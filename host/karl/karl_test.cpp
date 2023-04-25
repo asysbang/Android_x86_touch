@@ -43,9 +43,13 @@ int main() {
 	}
 	const char* msg = "client send hello\n";
 	write(clientfd, msg, strlen(msg));
-	char buf[100];
-	int read_len = read(clientfd, &buf, sizeof(buf));
-	fprintf(stderr, "=========================client read %d,%s \n", read_len, buf);
+	//char buf[100];
+	//int read_len = read(clientfd, &buf, sizeof(buf));
+	//fprintf(stderr, "=========================client read %d,%s \n", read_len, buf);
+
+	int width;
+	int read_len = read(clientfd, &width, sizeof(width));
+	fprintf(stderr, "=========================client read %d,%d \n", read_len, width);
 	return -1;
 }
 

@@ -49,6 +49,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             File dir = getFilesDir();
             Log.e("","======getFilesDir="+dir.getAbsolutePath());
+            File karlFile=  new File(dir.getAbsolutePath()+"/karl");
+            if (karlFile.exists()) {
+                Log.e("","======exists=");
+                return;
+            }
             AssetManager assetManager = getAssets();
             InputStream inputStream = assetManager.open("karl");
             FileOutputStream fos = new FileOutputStream(dir.getAbsolutePath()+"/karl");

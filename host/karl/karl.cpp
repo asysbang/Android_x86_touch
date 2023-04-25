@@ -171,8 +171,8 @@ int main() {
 			if (read_len > 0) {
 				fprintf(stderr, "=========================server read %d, %s\n",
 						read_len, buf);
-				const char* msg = "server send world\n";
-				write(clientfd, msg, strlen(msg));
+				//const char* msg = "server send world\n";
+				write(clientfd, &w, sizeof(w));
 			} else {
 				signal(SIGPIPE, SIG_IGN);
 				break;

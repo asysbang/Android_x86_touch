@@ -40,7 +40,6 @@ public class SuHelper {
         try {
             mSuProcess = runtime.exec("su");
             mBos = (BufferedOutputStream) mSuProcess.getOutputStream();
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
