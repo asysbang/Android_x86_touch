@@ -30,11 +30,54 @@
 
 #define LOG_TAG    "touch_native"
 #define LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG, __VA_ARGS__)
+
+int clientfd;
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
-    // TODO: implement getWidth()
-    int clientfd;
+    const char* msg = "width";
+    write(clientfd, msg, strlen(msg));
+    //char buf[100];
+//    int read_len = read(clientfd, &buf, sizeof(buf));
+//    LOGE("========client read %s ",buf);
+// ???????????????接收字符串没问题，但是int不对，应该是数据大小或者大小尾端问题？？？？？？？？？？？？1987208563
+    int width=-1;
+    int read_len = read(clientfd, &width, sizeof(width));
+    LOGE("========width %d xxx %d",width,read_len);
+    return width;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_getHeight(JNIEnv *env, jobject thiz) {
+    const char* msg = "height";
+    write(clientfd, msg, strlen(msg));
+    //char buf[100];
+//    int read_len = read(clientfd, &buf, sizeof(buf));
+//    LOGE("========client send %s ",msg);
+// ???????????????接收字符串没问题，但是int不对，应该是数据大小或者大小尾端问题？？？？？？？？？？？？1987208563
+    int height=-1;
+    int read_len = read(clientfd, &height, sizeof(height));
+    LOGE("========height %d xxx %d",height,read_len);
+    return height;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_getPng(JNIEnv *env, jobject thiz) {
+    const char* msg = "png";
+    write(clientfd, msg, strlen(msg));
+    //char buf[100];
+//    int read_len = read(clientfd, &buf, sizeof(buf));
+//    LOGE("========client send %s ",msg);
+// ???????????????接收字符串没问题，但是int不对，应该是数据大小或者大小尾端问题？？？？？？？？？？？？1987208563
+    int height=-1;
+    int read_len = read(clientfd, &height, sizeof(height));
+    LOGE("========height %d xxx %d",height,read_len);
+    return height;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_connectServer(JNIEnv *env, jobject thiz) {
     clientfd = socket(AF_LOCAL, SOCK_STREAM, 0);
     if (-1 == clientfd) {
         LOGE("========client read1 111111111111");
@@ -51,14 +94,26 @@ Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
         LOGE("========client read1 2222222");
         return -2;
     }
-    const char* msg = "client send hello\n";
+    return 1;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, jint y) {
+    LOGE("========Java_com_asysbang_touch_NativeHelper_getRgb");
+    const char* msg = "rgb";
     write(clientfd, msg, strlen(msg));
-    //char buf[100];
-//    int read_len = read(clientfd, &buf, sizeof(buf));
-//    LOGE("========client read %s ",buf);
-// ???????????????接收字符串没问题，但是int不对，应该是数据大小或者大小尾端问题？？？？？？？？？？？？
-    int width=-1;
-    int read_len = read(clientfd, &width, sizeof(width));
-    LOGE("========client read1 %d xxx %d",width,read_len);
-    return width;
+    int px = x;
+    write(clientfd, &px, sizeof(px));
+    int py = y;
+    write(clientfd, &py, sizeof(py));
+    unsigned char r ,g,b;
+    int read_len = read(clientfd, &r, sizeof(r));
+    LOGE("========height %d xxx %d",r,read_len);
+
+    read_len = read(clientfd, &g, sizeof(g));
+    LOGE("========height %d xxx %d",g,read_len);
+
+    read_len = read(clientfd, &b, sizeof(b));
+    LOGE("========height %d xxx %d",b,read_len);
+    return r;
 }

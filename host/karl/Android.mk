@@ -10,6 +10,7 @@ LOCAL_SHARED_LIBRARIES := \
     libbinder \
     libhwui \
     libui \
+    liblog \
     libgui
 
 LOCAL_MODULE:= karl
@@ -33,6 +34,7 @@ LOCAL_SHARED_LIBRARIES := \
     libbinder \
     libhwui \
     libui \
+    liblog \
     libgui
 
 LOCAL_MODULE:= karl_test

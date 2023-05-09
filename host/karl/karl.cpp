@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+#define LOG_TAG "aaa"
 #include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
@@ -47,6 +47,11 @@
 #include <SkColorSpace.h>
 #pragma GCC diagnostic pop
 
+#include <android/log.h>
+
+
+#define  LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,LOG_TAG,__VA_ARGS__)
+
 using namespace android;
 
 static uint32_t DEFAULT_DISPLAY_ID = ISurfaceComposer::eDisplayIdMain;
@@ -58,7 +63,7 @@ static uint32_t DEFAULT_DISPLAY_ID = ISurfaceComposer::eDisplayIdMain;
 int main() {
 
 	int32_t displayId = DEFAULT_DISPLAY_ID;
-	fprintf(stderr, "==========================karl main\n");
+	LOGE("==========================karl main\n");
 	int fd = -1;
 
 	void const* mapbase = MAP_FAILED;
@@ -126,7 +131,19 @@ int main() {
 	d = HAL_DATASPACE_UNKNOWN;
 	size = s * h * bytesPerPixel(f);
 
-	fprintf(stderr, "==========================getWidth = %d\n", w);
+
+        size_t Bpp = bytesPerPixel(f);
+        //for (size_t y=0 ; y<h ; y++) {
+        //    write(fd, base, w*Bpp);
+        //    base = (void *)((char *)base + s*Bpp);
+        //}
+        fprintf(stderr, "==========================size %ld\n",size);
+        fprintf(stderr, "==========================s %u\n",s);
+        fprintf(stderr, "==========================Bpp %ld\n",Bpp);
+	unsigned char * rgb = (unsigned char *)base+(53*s+53)*4;
+
+        fprintf(stderr, "==========================color %d,%d,%d,%d,%d,%d,%d,%d,%d\n",rgb[0],rgb[1],rgb[2],rgb[3],rgb[4],rgb[5],rgb[6],rgb[7],rgb[8]);
+
 	close(fd);
 	if (mapbase != MAP_FAILED) {
 		munmap((void *) mapbase, mapsize);
@@ -134,7 +151,7 @@ int main() {
 //socket
 	int serverFd = socket(AF_LOCAL, SOCK_STREAM, 0);
 	if (-1 == serverFd) {
-		fprintf(stderr, "==========================serverFd = -1\n");
+		LOGE("==========================serverFd = -1\n");
 		return -1;
 	}
 
@@ -146,7 +163,7 @@ int main() {
 			+ sizeof(serveraddr.sun_family);
 	int ret = bind(serverFd, (struct sockaddr *) &serveraddr, addrlen);
 	if (-1 == ret) {
-		fprintf(stderr, "==========================ret = -1\n");
+		LOGE("==========================ret = -1\n");
 		return -1;
 	}
 
@@ -169,10 +186,32 @@ int main() {
 		while (clientfd) {
 			read_len = read(clientfd, &buf, sizeof(buf));
 			if (read_len > 0) {
-				fprintf(stderr, "=========================server read %d, %s\n",
-						read_len, buf);
+				buf[read_len] = '\0';
+				fprintf(stderr, "=========================server read %d, %s\n", read_len, buf);
 				//const char* msg = "server send world\n";
-				write(clientfd, &w, sizeof(w));
+				if(buf[0] == 'w') {
+					fprintf(stderr, "==========================width = %d\n",w);
+					write(clientfd, &w, sizeof(w));
+                                } else if (buf[0] == 'h') {
+					fprintf(stderr, "==========================height = %d\n",h);
+					write(clientfd, &h, sizeof(h));
+                                } else if (buf[0] == 'r'){
+					
+int x;
+	read(clientfd, &x, sizeof(x));
+int y;
+	 read(clientfd, &y, sizeof(y));
+fprintf(stderr, "==========================rgb,%d,%d\n",x,y);
+	unsigned char * rgb = (unsigned char *)base+(y*s+x)*4;
+
+        fprintf(stderr, "==========================color1111 %d,%d,%d,%d,%d,%d,%d,%d,%d\n",rgb[0],rgb[1],rgb[2],rgb[3],rgb[4],rgb[5],rgb[6],rgb[7],rgb[8]);
+					write(clientfd, &rgb[0], sizeof(rgb[0]));
+					write(clientfd, &rgb[1], sizeof(rgb[1]));
+					write(clientfd, &rgb[2], sizeof(rgb[2]));
+                                } else {
+					fprintf(stderr, "==========================strcmp else\n");
+					write(clientfd, &read_len, sizeof(read_len));
+                                }
 			} else {
 				signal(SIGPIPE, SIG_IGN);
 				break;

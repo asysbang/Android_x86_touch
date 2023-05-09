@@ -7,8 +7,6 @@ import android.util.Log;
 
 import com.asysbang.touch.su.SuHelper;
 
-import java.lang.annotation.Native;
-
 public class MainService extends Service {
 
     private static final String TAG = "MainService";
@@ -33,17 +31,24 @@ public class MainService extends Service {
                     throw new RuntimeException(e);
                 }
                 NativeHelper mHelper = new NativeHelper();
-                Log.e(TAG,"=======runTestClient new : "+mHelper.getWidth());
+                int connected = mHelper.connectServer();
+                if (connected == 1) {
+                    Log.e(TAG, "=======runTestClient getHeight1 : " + mHelper.getHeight());
+                    Log.e(TAG, "=======runTestClient getWidth1 : " + mHelper.getWidth());
+                    Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(475,360));
+                    Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(53,53));
+                } else {
+                    Log.e(TAG, "=======connectServer failed : " + connected);
+                }
             }
         }).start();
-
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG,"=======onStartCommand");
+        Log.e(TAG, "=======onStartCommand");
         SuHelper.getInstance().runSu();
-        SuHelper.getInstance().runCmd("sh "+getFilesDir().getAbsolutePath()+"/run.sh\n");
+        SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
         runTestClient();
         return super.onStartCommand(intent, flags, startId);
     }
