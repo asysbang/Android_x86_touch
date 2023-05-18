@@ -2,6 +2,7 @@ package com.asysbang.touch;
 
 import android.app.Service;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.IBinder;
 import android.util.Log;
 
@@ -37,9 +38,13 @@ public class MainService extends Service {
                     Log.e(TAG, "=======runTestClient getWidth1 : " + mHelper.getWidth());
                     Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(475,360));
                     Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(53,53));
+                    Log.e(TAG, "=======png start: ");
+                    int png = mHelper.getNewPng();
+                    Log.e(TAG, "=======png : " + png);
                 } else {
                     Log.e(TAG, "=======connectServer failed : " + connected);
                 }
+                Log.e(TAG, "=======over: ");
             }
         }).start();
     }
@@ -48,6 +53,7 @@ public class MainService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.e(TAG, "=======onStartCommand");
         SuHelper.getInstance().runSu();
+        //SuHelper.getInstance().getScreencap();
         SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
         runTestClient();
         return super.onStartCommand(intent, flags, startId);

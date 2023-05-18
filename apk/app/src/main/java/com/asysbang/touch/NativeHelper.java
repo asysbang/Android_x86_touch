@@ -12,7 +12,10 @@ public class NativeHelper {
 
     native int getHeight();
 
-    native int getPng();
 
     native int getRgb(int x ,int y);
+
+    native byte[] testGetByte();
+
+    native int getNewPng();
 }

@@ -61,41 +61,7 @@ Java_com_asysbang_touch_NativeHelper_getHeight(JNIEnv *env, jobject thiz) {
     LOGE("========height %d xxx %d",height,read_len);
     return height;
 }
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_asysbang_touch_NativeHelper_getPng(JNIEnv *env, jobject thiz) {
-    const char* msg = "png";
-    write(clientfd, msg, strlen(msg));
-    //char buf[100];
-//    int read_len = read(clientfd, &buf, sizeof(buf));
-//    LOGE("========client send %s ",msg);
-// ???????????????接收字符串没问题，但是int不对，应该是数据大小或者大小尾端问题？？？？？？？？？？？？1987208563
-    int height=-1;
-    int read_len = read(clientfd, &height, sizeof(height));
-    LOGE("========height %d xxx %d",height,read_len);
-    return height;
-}
-extern "C"
-JNIEXPORT jint JNICALL
-Java_com_asysbang_touch_NativeHelper_connectServer(JNIEnv *env, jobject thiz) {
-    clientfd = socket(AF_LOCAL, SOCK_STREAM, 0);
-    if (-1 == clientfd) {
-        LOGE("========client read1 111111111111");
-        return -1;
-    }
-    sockaddr_un clientaddr;
-    bzero(&clientaddr, sizeof(clientaddr));
-    strcpy(clientaddr.sun_path + 1, "/tmp/mysocket");
-    clientaddr.sun_family = AF_LOCAL;
-    socklen_t addrlen = 1 + strlen("/tmp/mysocket")
-                        + sizeof(clientaddr.sun_family);
-    int ret = connect(clientfd, (struct sockaddr *) &clientaddr, addrlen);
-    if (-1 == ret) {
-        LOGE("========client read1 2222222");
-        return -2;
-    }
-    return 1;
-}
+
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, jint y) {
@@ -116,4 +82,63 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     read_len = read(clientfd, &b, sizeof(b));
     LOGE("========height %d xxx %d",b,read_len);
     return r;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_getPng(JNIEnv *env, jobject thiz) {
+    LOGE("========Java_com_asysbang_touch_NativeHelper_getPng");
+    const char* msg = "png";
+    write(clientfd, msg, strlen(msg));
+    LOGE("========getPng write ");
+    unsigned char rgb_data[1024 * 768 * 4];
+    int read_len = read(clientfd, &rgb_data, sizeof(rgb_data));
+    LOGE("========getPng %d ",read_len);
+    return 1;
+}
+
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_getNewPng(JNIEnv *env, jobject thiz) {
+    LOGE("========client read1 getNewPng");
+    const char* msg = "png";
+    write(clientfd, msg, strlen(msg));
+    LOGE("========getPng write ");
+    unsigned char rgb_data[1024 * 768 *2];
+    LOGE("========getPng111 %d ",sizeof(rgb_data));
+    int read_len = read(clientfd, &rgb_data, sizeof(rgb_data));
+    LOGE("========getPng222 %d ",read_len);
+
+//    unsigned char rgb_data1[1024 * 768 *2];
+//    LOGE("========getPng %d ",sizeof(rgb_data1));
+//    int read_len1 = read(clientfd, &rgb_data1, sizeof(rgb_data1));
+//    LOGE("========getPng %d ",read_len1);
+    return -1;
+}
+extern "C"
+JNIEXPORT jint JNICALL
+Java_com_asysbang_touch_NativeHelper_connectServer(JNIEnv *env, jobject thiz) {
+    clientfd = socket(AF_LOCAL, SOCK_STREAM, 0);
+    if (-1 == clientfd) {
+        LOGE("========client read1 111111111111");
+        return -1;
+    }
+    sockaddr_un clientaddr;
+    bzero(&clientaddr, sizeof(clientaddr));
+    strcpy(clientaddr.sun_path + 1, "/data/user/0/com.asysbang.touch/files/mysocket");
+    clientaddr.sun_family = AF_LOCAL;
+    socklen_t addrlen = 1 + strlen("/data/user/0/com.asysbang.touch/files/mysocket")
+                        + sizeof(clientaddr.sun_family);
+    int ret = connect(clientfd, (struct sockaddr *) &clientaddr, addrlen);
+    if (-1 == ret) {
+        LOGE("========client read1 2222222");
+        return -2;
+    }
+    return 1;
+}
+
+extern "C"
+JNIEXPORT jbyteArray JNICALL
+Java_com_asysbang_touch_NativeHelper_testGetByte(JNIEnv *env, jobject thiz) {
+    // TODO: implement testGetByte()
+    return nullptr;
 }
