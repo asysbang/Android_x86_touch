@@ -36,7 +36,7 @@ int clientfd;
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
-    const char* msg = "width";
+    const char* msg = "widt";
     write(clientfd, msg, strlen(msg));
     //char buf[100];
 //    int read_len = read(clientfd, &buf, sizeof(buf));
@@ -50,7 +50,7 @@ Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getHeight(JNIEnv *env, jobject thiz) {
-    const char* msg = "height";
+    const char* msg = "heig";
     write(clientfd, msg, strlen(msg));
     //char buf[100];
 //    int read_len = read(clientfd, &buf, sizeof(buf));
@@ -66,7 +66,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, jint y) {
     LOGE("========Java_com_asysbang_touch_NativeHelper_getRgb");
-    const char* msg = "rgb";
+    const char* msg = "rgb1";
     write(clientfd, msg, strlen(msg));
     int px = x;
     write(clientfd, &px, sizeof(px));
@@ -74,13 +74,11 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     write(clientfd, &py, sizeof(py));
     unsigned char r ,g,b;
     int read_len = read(clientfd, &r, sizeof(r));
-    LOGE("========height %d xxx %d",r,read_len);
 
     read_len = read(clientfd, &g, sizeof(g));
-    LOGE("========height %d xxx %d",g,read_len);
 
     read_len = read(clientfd, &b, sizeof(b));
-    LOGE("========height %d xxx %d",b,read_len);
+    LOGE("========native getRgb is  [%d,%d,%d]",r,g,b);
     return r;
 }
 extern "C"
@@ -99,20 +97,28 @@ Java_com_asysbang_touch_NativeHelper_getPng(JNIEnv *env, jobject thiz) {
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getNewPng(JNIEnv *env, jobject thiz) {
-    LOGE("========client read1 getNewPng");
-    const char* msg = "png";
+    LOGE("========native getNewPng");
+    const char* msg = "png1";
     write(clientfd, msg, strlen(msg));
-    LOGE("========getPng write ");
-    unsigned char rgb_data[1024 * 768 *2];
-    LOGE("========getPng111 %d ",sizeof(rgb_data));
-    int read_len = read(clientfd, &rgb_data, sizeof(rgb_data));
-    LOGE("========getPng222 %d ",read_len);
+    LOGE("========getPng write over");
+    //read(clientfd, &g, sizeof(g));
+    //unsigned char rgb_data[1024 * 768 *4];
+//    LOGE("========getPng111 %d ",sizeof(rgb_data));
+    //int read_len = read(clientfd, rgb_data, sizeof(rgb_data));
+    //LOGE("========getPng222 %d ",read_len);
+
+    unsigned char rgb_data[1024 * 4*100];
+    int read_len = read(clientfd, rgb_data, sizeof(rgb_data));
+    while (read_len>0) {
+        LOGE("========read data %d",read_len);
+        read_len = read(clientfd, rgb_data, sizeof(rgb_data));
+    }
 
 //    unsigned char rgb_data1[1024 * 768 *2];
 //    LOGE("========getPng %d ",sizeof(rgb_data1));
 //    int read_len1 = read(clientfd, &rgb_data1, sizeof(rgb_data1));
 //    LOGE("========getPng %d ",read_len1);
-    return -1;
+    return -11;
 }
 extern "C"
 JNIEXPORT jint JNICALL

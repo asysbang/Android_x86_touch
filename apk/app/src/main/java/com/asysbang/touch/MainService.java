@@ -36,8 +36,7 @@ public class MainService extends Service {
                 if (connected == 1) {
                     Log.e(TAG, "=======runTestClient getHeight1 : " + mHelper.getHeight());
                     Log.e(TAG, "=======runTestClient getWidth1 : " + mHelper.getWidth());
-                    Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(475,360));
-                    Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(53,53));
+                    //Log.e(TAG, "=======runTestClient getRgb1 : " + mHelper.getRgb(53,53));
                     Log.e(TAG, "=======png start: ");
                     int png = mHelper.getNewPng();
                     Log.e(TAG, "=======png : " + png);
@@ -51,7 +50,7 @@ public class MainService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.e(TAG, "=======onStartCommand");
+        Log.e(TAG, "=======onStartCommand:"+getFilesDir().getAbsolutePath());
         SuHelper.getInstance().runSu();
         //SuHelper.getInstance().getScreencap();
         SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
