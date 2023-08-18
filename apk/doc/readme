@@ -1,0 +1,14 @@
+编译opencv x86_64
+
+export ANDROID_NDK=/home/karl/work/tools/android/Sdk/ndk/23.1.7779620
+export ANDROID_SDK_ROOT=/home/karl/work/tools/android/Sdk
+mkdir build_android_x86_64
+
+cd build_android_x86_64
+
+cmake -DANDROID_NATIVE_API_LEVEL=android-24 -DANDROID_ABI=x86_64 -DCMAKE_TOOLCHAIN_FILE=/home/karl/work/tools/android/Sdk/ndk/23.1.7779620/build/cmake/android.toolchain.cmake   ../
+
+
+cmake -DANDROID_NATIVE_API_LEVEL=android-24 -DANDROID_ABI=x86_64 -DCMAKE_TOOLCHAIN_FILE=/home/karl/work/tools/android/Sdk/ndk/23.1.7779620/build/cmake/android.toolchain.cmake -DCMAKE_CXX_COMPILER=/usr/bin/g++ -DCMAKE_C_COMPILER=/usr/bin/gcc ../
+
+gradle编译不过，设置org.gradle.java.home=/usr/lib/jvm/java-11-openjdk-amd64

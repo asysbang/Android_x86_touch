@@ -7,15 +7,17 @@ import android.util.Log;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 
 public class SuHelper {
+
+    private static SuHelper sInstance;
+    private Process mSuProcess;
+    private BufferedOutputStream mBos;
+    private BufferedInputStream mBis;
 
     private SuHelper() {
 
     }
-
-    private static SuHelper sInstance;
 
     public static SuHelper getInstance() {
         if (null == sInstance) {
@@ -23,12 +25,6 @@ public class SuHelper {
         }
         return sInstance;
     }
-
-    private Process mSuProcess;
-
-    private BufferedOutputStream mBos;
-
-    private BufferedInputStream mBis;
 
     public void runCmd(String cmd) {
         try {
@@ -42,7 +38,7 @@ public class SuHelper {
 
     public void getScreencap() {
         try {
-            Log.e("","==========start");
+            Log.e("", "==========start");
             String cmd = "screencap -p /data/user/0/com.asysbang.touch/files/xx.png\n";
             byte[] cmdBytes = cmd.getBytes();
             mBos.write(cmdBytes, 0, cmdBytes.length);
@@ -54,7 +50,7 @@ public class SuHelper {
             byte[] buf = new byte[128];
             int len = -1;
             while ((len = mBis.read(buf, 0, 14)) != -1) {
-                Log.e("","=========="+len);
+                Log.e("", "==========" + len);
                 break;
             }
 //            String cmd2 = "chmod 777 /data/user/0/com.asysbang.touch/files/xx.png\n";
@@ -64,7 +60,7 @@ public class SuHelper {
 //            Thread.sleep(30);
             Bitmap bitmap = BitmapFactory.decodeFile("/data/user/0/com.asysbang.touch/files/xx.png");
 
-            Log.e("","==========over"+bitmap.getHeight());
+            Log.e("", "==========over" + bitmap.getHeight());
         } catch (Exception e) {
 
         }

@@ -3,6 +3,9 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
+        //flatDir {
+        // dirs 'app/aars'
+        //}
     }
 }
 dependencyResolutionManagement {
@@ -10,6 +13,9 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        //flatDir {
+        //dirs 'app/aars'
+        // }
     }
 }
 rootProject.name = "MyTouch"

@@ -5,9 +5,6 @@ import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.util.Log;
 
-import com.asysbang.touch.su.SuHelper;
-import com.google.android.material.bottomnavigation.BottomNavigationView;
-
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -15,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.asysbang.touch.databinding.ActivityMainBinding;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -48,28 +46,28 @@ public class MainActivity extends AppCompatActivity {
     private void copyAssets() {
         try {
             File dir = getFilesDir();
-            Log.e("","======getFilesDir="+dir.getAbsolutePath());
-            File karlFile=  new File(dir.getAbsolutePath()+"/karl");
+            Log.e("", "======getFilesDir=" + dir.getAbsolutePath());
+            File karlFile = new File(dir.getAbsolutePath() + "/karl");
             if (karlFile.exists()) {
-                Log.e("","======exists=");
+                Log.e("", "======exists=");
                 return;
             }
             AssetManager assetManager = getAssets();
             InputStream inputStream = assetManager.open("karl");
-            FileOutputStream fos = new FileOutputStream(dir.getAbsolutePath()+"/karl");
+            FileOutputStream fos = new FileOutputStream(dir.getAbsolutePath() + "/karl");
             byte[] buf = new byte[2048];
             int len = -1;
-            while ((len = inputStream.read(buf))!=-1) {
-                fos.write(buf,0,len);
+            while ((len = inputStream.read(buf)) != -1) {
+                fos.write(buf, 0, len);
             }
             fos.flush();
             fos.close();
             inputStream.close();
 
             inputStream = assetManager.open("run.sh");
-            fos = new FileOutputStream(dir.getAbsolutePath()+"/run.sh");
-            while ((len = inputStream.read(buf))!=-1) {
-                fos.write(buf,0,len);
+            fos = new FileOutputStream(dir.getAbsolutePath() + "/run.sh");
+            while ((len = inputStream.read(buf)) != -1) {
+                fos.write(buf, 0, len);
             }
             fos.flush();
             fos.close();
@@ -83,7 +81,30 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startMainService() {
-        startService(new Intent(this,MainService.class));
+        startService(new Intent(this, MainService.class));
     }
 
+    //    private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(MainActivity.this) {
+//        @Override
+//        public void onManagerConnected(int status) {
+//            super.onManagerConnected(status);
+//            Log.e("", "========onManagerConnected=" + status);
+//        }
+//    };
+    @Override
+    protected void onResume() {
+        super.onResume();
+//        System.load(Core.NATIVE_LIBRARY_NAME);
+//        System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
+//        OpenCVNativeLoader nativeLoader = new OpenCVNativeLoader();
+//        nativeLoader.init();
+        //OpenCV.loadShared();
+//        if (!OpenCVLoader.initDebug()) {
+//            Log.d("aaa", "===Internal OpenCV library not found. Using OpenCV Manager for initialization");
+//            OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_3_0_0, MainActivity.this, mLoaderCallback);
+//        } else {
+//            Log.d("", "=====OpenCV library found inside package. Using it!");
+//            mLoaderCallback.onManagerConnected(LoaderCallbackInterface.SUCCESS);
+//        }
+    }
 }

@@ -1,5 +1,8 @@
 package com.asysbang.touch.ui.notifications;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.asysbang.touch.R;
 import com.asysbang.touch.databinding.FragmentNotificationsBinding;
 
 public class NotificationsFragment extends Fragment {
@@ -26,7 +30,18 @@ public class NotificationsFragment extends Fragment {
 
         final TextView textView = binding.textNotifications;
         notificationsViewModel.getText().observe(getViewLifecycleOwner(), textView::setText);
+
+
+        //testOpencv();
         return root;
+    }
+
+    private void testOpencv() {
+        Drawable drawable = getContext().getDrawable(R.drawable.abc1);//-185 +100 40 40
+        Bitmap bitmap = ((BitmapDrawable) drawable).getBitmap();
+//        Mat siftMat = new Mat();
+//        Utils.bitmapToMat(bitmap, siftMat);
+//        Log.e("","======"+siftMat.width());
     }
 
     @Override
