@@ -69,34 +69,36 @@ Java_com_asysbang_touch_NativeHelper_getNewPng(JNIEnv *env, jobject thiz) {
 //    }
 
 
-    int targetSize = 1024*4*768;
+    int targetSize = 1024 * 4 * 768;
     LOGE("========read 1111");
-    unsigned char *targetData=(unsigned char *)malloc(targetSize*sizeof(unsigned char));
+    unsigned char *targetData = (unsigned char *) malloc(targetSize * sizeof(unsigned char));
     size_t getSize = 0;
     unsigned char *targetDataPoint = targetData;
 
-    while(getSize < targetSize) {
-        int readLen = read(clientfd, targetDataPoint, targetSize-getSize);
-        if(readLen > 0) {
+    while (getSize < targetSize) {
+        int readLen = read(clientfd, targetDataPoint, targetSize - getSize);
+        if (readLen > 0) {
             getSize += readLen;
             targetDataPoint += readLen;
-            LOGE("========read getSize is %d",getSize);
+            LOGE("========read getSize is %d", getSize);
         } else {
             LOGE("========read error ??????????????");
         }
     }
-    LOGE("========read over %d,%d,%d",targetData[1024*4*53 +53*4],targetData[1024*4*53 +53*4+1],targetData[1024*4*53 +53*4+2]);
+    LOGE("========read over %d,%d,%d", targetData[1024 * 4 * 53 + 53 * 4],
+         targetData[1024 * 4 * 53 + 53 * 4 + 1], targetData[1024 * 4 * 53 + 53 * 4 + 2]);
 
     jbyteArray nativeArray = (*env).NewByteArray(targetSize);
-    jbyte* native_array = (*env).GetByteArrayElements(nativeArray,NULL);
-    for(int i = 0;i<targetSize;i++) {
+    jbyte *native_array = (*env).GetByteArrayElements(nativeArray, NULL);
+    for (int i = 0; i < targetSize; i++) {
         native_array[i] = targetData[i];
     }
 
 
     //(*env).SetByteArrayRegion(nativeArray, 0, targetSize, reinterpret_cast<const jbyte *>(targetData));
 
-    LOGE("========after into byte [%d,%d,%d]", native_array[1024*4*53 +53*4],native_array[1024*4*53 +53*4+1],native_array[1024*4*53 +53*4+2]);
+    LOGE("========after into byte [%d,%d,%d]", native_array[1024 * 4 * 53 + 53 * 4],
+         native_array[1024 * 4 * 53 + 53 * 4 + 1], native_array[1024 * 4 * 53 + 53 * 4 + 2]);
 
 //    unsigned char rgb_data[1024 * 4 * 100];
 //    int t = 0;
@@ -214,50 +216,53 @@ Java_com_asysbang_touch_NativeHelper_getRgb1(JNIEnv *env, jobject thiz, jint x, 
     LOGE("========native getRgb is 111111 [%d,%d,  %d]", buf[0], buf[1], buf[2]);
     jbyteArray nativeArray = (*env).NewByteArray(3);
     (*env).SetByteArrayRegion(nativeArray, 0, 3, reinterpret_cast<const jbyte *>(buf));
-    LOGE("========native getRgb is 111111 [%d,%d,  %d]", nativeArray[0], nativeArray[1], nativeArray[2]);
+    LOGE("========native getRgb is 111111 [%d,%d,  %d]", nativeArray[0], nativeArray[1],
+         nativeArray[2]);
 
 
     return nativeArray;
 }
 extern "C"
 JNIEXPORT jintArray JNICALL
-Java_com_asysbang_touch_NativeHelper_testBitmap(JNIEnv *env, jobject thiz, jintArray pix, jint width, jint height) {
+Java_com_asysbang_touch_NativeHelper_testBitmap(JNIEnv *env, jobject thiz, jintArray pix,
+                                                jint width, jint height) {
     LOGE("========Java_com_asysbang_touch_NativeHelper_testBitmap");
     const char *msg = "png1";
     write(clientfd, msg, strlen(msg));
-    int targetSize = 1024*4*768;
-    unsigned char *targetData=(unsigned char *)malloc(targetSize*sizeof(unsigned char));
+    int targetSize = 1024 * 4 * 768;
+    unsigned char *targetData = (unsigned char *) malloc(targetSize * sizeof(unsigned char));
     size_t getSize = 0;
     unsigned char *targetDataPoint = targetData;
-    while(getSize < targetSize) {
-        int readLen = read(clientfd, targetDataPoint, targetSize-getSize);
-        if(readLen > 0) {
+    while (getSize < targetSize) {
+        int readLen = read(clientfd, targetDataPoint, targetSize - getSize);
+        if (readLen > 0) {
             getSize += readLen;
             targetDataPoint += readLen;
-            LOGE("========read getSize is %d",getSize);
+            LOGE("========read getSize is %d", getSize);
         } else {
             LOGE("========read error ??????????????");
         }
     }
-    LOGE("========read over %d,%d,%d",targetData[1024*4*53 +53*4],targetData[1024*4*53 +53*4+1],targetData[1024*4*53 +53*4+2]);
-    jintArray nativeArray = env->NewIntArray(targetSize/4);
-    jint* native_array = env->GetIntArrayElements(nativeArray,NULL);
+    LOGE("========read over %d,%d,%d", targetData[1024 * 4 * 53 + 53 * 4],
+         targetData[1024 * 4 * 53 + 53 * 4 + 1], targetData[1024 * 4 * 53 + 53 * 4 + 2]);
+    jintArray nativeArray = env->NewIntArray(targetSize / 4);
+    jint *native_array = env->GetIntArrayElements(nativeArray, NULL);
     int index = 0;
-    for(int i = 0;i < targetSize;) {
+    for (int i = 0; i < targetSize;) {
 
         int r = targetData[i];
-        int g = targetData[i+1];
-        int b = targetData[i+2];
-        int a = targetData[i+3];
+        int g = targetData[i + 1];
+        int b = targetData[i + 2];
+        int a = targetData[i + 3];
         //转argb
-        native_array[index] = ((r << 16) | (g << 8) | (b )|(a<<24));
-        if (index == 1024*53+53) {
-            LOGE("=======xxxxxx %d %d %d", r,g,b,a);
+        native_array[index] = ((r << 16) | (g << 8) | (b) | (a << 24));
+        if (index == 1024 * 53 + 53) {
+            LOGE("=======xxxxxx %d %d %d", r, g, b, a);
         }
         index++;
-        i=i+4;
+        i = i + 4;
     }
-    LOGE("========after into pixel is %d", native_array[1024*53 +53]);
+    LOGE("========after into pixel is %d", native_array[1024 * 53 + 53]);
     env->ReleaseIntArrayElements(nativeArray, native_array, 0);
     return nativeArray;
 }

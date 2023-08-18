@@ -6,7 +6,7 @@ public class NativeHelper {
         System.loadLibrary("touch");
     }
 
-    native int[] testBitmap(int[] pix,int width,int height);
+    native int[] testBitmap(int[] pix, int width, int height);
 
     native int connectServer();
 

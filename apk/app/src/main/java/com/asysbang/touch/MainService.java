@@ -6,15 +6,37 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.IBinder;
 import android.util.Log;
+import android.view.Gravity;
+import android.view.WindowManager;
 
 import com.asysbang.touch.su.SuHelper;
+import com.asysbang.touch.ui.FloatView;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
-public class MainService extends Service {
+public class MainService extends Service implements FloatView.FloatViewListener {
 
     private static final String TAG = "MainService";
+
+
+    private WindowManager mWindowManager;
+    private WindowManager.LayoutParams mLp;
+    private FloatView mFloatView;
+
+    private void addFloatWindow() {
+        mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
+        mFloatView = new FloatView(this, this);
+        mLp = new WindowManager.LayoutParams(WindowManager.LayoutParams.WRAP_CONTENT, WindowManager.LayoutParams.WRAP_CONTENT);
+        mLp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE | WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL;
+        mLp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
+        mLp.gravity = Gravity.TOP | Gravity.LEFT;
+        mLp.x = 100;
+        mLp.y = 300;
+        mLp.width = 80;
+        mLp.height = 50;
+        mWindowManager.addView(mFloatView, mLp);
+    }
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -24,6 +46,7 @@ public class MainService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        addFloatWindow();
     }
 
     private void runTestClient() {
@@ -41,38 +64,39 @@ public class MainService extends Service {
 
                     int width = mHelper.getWidth();
                     int height = mHelper.getHeight();
-                    Log.e(TAG, "=======runTestClient width is " + width +" , height is "+height);
+                    Log.e(TAG, "=======runTestClient width is " + width + " , height is " + height);
 //                    char[] rgb = mHelper.getRgb(53, 53);//????????????? 应该是byte 还是char
 //                    Log.e(TAG, "=======runTestClient rgb : " + (int) rgb[0] + " , " + (int) rgb[1] + " , " + (int) rgb[2]);
 ////                    Log.e(TAG, "=======png start: ");
 ////                    int png = mHelper.getNewPng();
 ////                    Log.e(TAG, "=======png : " + png);
 //
-//                    Bitmap bitmap = ((BitmapDrawable) getDrawable(R.drawable.ll)).getBitmap();
-//                    int pixel = bitmap.getPixel(53, 53);
-//                    Log.e(TAG, "=======pixel : " +pixel);
-//                    int aa = (pixel>>24)&0xFF;
-//                    int rr = (pixel>>16)&0xFF;
-//                    int gg = (pixel>>8)&0xFF;
-//                    int bb = (pixel>>0)&0xFF;
-//                    Log.e(TAG, "=======pixel : " +aa+","+rr+","+gg+","+bb);
-//                    int w = bitmap.getWidth(), h = bitmap.getHeight();
-//                    int[] pix = new int[w * h];
-//                    Log.e(TAG, "=======png : " +pix.length);
-//                    bitmap.getPixels(pix, 0, w, 0, 0, w, h);
-//                    int[] ints = mHelper.testBitmap(pix, w, h);
-//                    Log.e(TAG, "=======ints : " +ints.length);
-//                    Log.e(TAG, "=======ints pixels --- : " +ints[1024*53 +53]);
+                    Bitmap bitmap = ((BitmapDrawable) getDrawable(R.drawable.ll)).getBitmap();
+                    int pixel = bitmap.getPixel(53, 53);
+                    Log.e(TAG, "=======pixel : " + pixel);
+                    int aa = (pixel >> 24) & 0xFF;
+                    int rr = (pixel >> 16) & 0xFF;
+                    int gg = (pixel >> 8) & 0xFF;
+                    int bb = (pixel >> 0) & 0xFF;
+                    Log.e(TAG, "=======pixel : " + aa + "," + rr + "," + gg + "," + bb);
+                    int w = bitmap.getWidth(), h = bitmap.getHeight();
+                    int[] pix = new int[w * h];
+                    Log.e(TAG, "=======png : " + pix.length);
+                    bitmap.getPixels(pix, 0, w, 0, 0, w, h);
+                    int[] ints = mHelper.testBitmap(pix, w, h);
+                    Log.e(TAG, "=======ints : " + ints.length);
+                    Log.e(TAG, "=======ints pixels --- : " + ints[1024 * 53 + 53]);
 //
 //
-//                    Bitmap bitmap2=Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
-//                    bitmap2.setPixels(ints,0,w,0,0,w,h);
-//                    try {
-//                        FileOutputStream out = new FileOutputStream("/data/user/0/com.asysbang.touch/files/123.png");
-//                        bitmap2.compress(Bitmap.CompressFormat.PNG, 100, out);
-//                    } catch (FileNotFoundException e) {
-//                        throw new RuntimeException(e);
-//                    }
+                    Bitmap bitmap2 = Bitmap.createBitmap(w, h, Bitmap.Config.ARGB_8888);
+                    bitmap2.setPixels(ints, 0, w, 0, 0, w, h);
+                    try {
+                        FileOutputStream out = new FileOutputStream("/data/user/0/com.asysbang.touch/files/123.png");
+                        bitmap2.compress(Bitmap.CompressFormat.PNG, 100, out);
+                        Log.e(TAG, "=======pixel :/data/user/0/com.asysbang.touch/files/123.png ");
+                    } catch (FileNotFoundException e) {
+                        throw new RuntimeException(e);
+                    }
 //                    byte[] data = new byte[ints.length];
 //                    for (int i =0;i<ints.length;i++) {
 //                        data[i] = (byte) ints[i];
@@ -100,5 +124,27 @@ public class MainService extends Service {
         SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
         runTestClient();
         return super.onStartCommand(intent, flags, startId);
+    }
+
+    @Override
+    public void onMoved(int x, int y) {
+        mLp.x = mLp.x + x;
+        mLp.y = mLp.y + y;
+        mWindowManager.updateViewLayout(mFloatView, mLp);
+    }
+
+    @Override
+    public void onStarted() {
+
+    }
+
+    @Override
+    public void onStopped() {
+
+    }
+
+    @Override
+    public void onConfig() {
+
     }
 }
