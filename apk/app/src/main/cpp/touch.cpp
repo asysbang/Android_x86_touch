@@ -186,8 +186,6 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     write(clientfd, &px, sizeof(px));
     int py = y;
     write(clientfd, &py, sizeof(py));
-
-
 //??????????????????????????????????怎么转换？？？？？？？？？？？？？？
     unsigned char *buf;
     read(clientfd, buf, 3);
@@ -263,6 +261,41 @@ Java_com_asysbang_touch_NativeHelper_testBitmap(JNIEnv *env, jobject thiz, jintA
         i = i + 4;
     }
     LOGE("========after into pixel is %d", native_array[1024 * 53 + 53]);
+    env->ReleaseIntArrayElements(nativeArray, native_array, 0);
+    return nativeArray;
+}
+extern "C"
+JNIEXPORT jintArray JNICALL
+Java_com_asysbang_touch_NativeHelper_getBitmapPixels(JNIEnv *env, jobject thiz,jint width, jint height) {
+    const char *msg = "png1";
+    write(clientfd, msg, strlen(msg));
+    int targetSize = width * 4 * height;
+    unsigned char *targetData = (unsigned char *) malloc(targetSize * sizeof(unsigned char));
+    size_t getSize = 0;
+    unsigned char *targetDataPoint = targetData;
+    while (getSize < targetSize) {
+        int readLen = read(clientfd, targetDataPoint, targetSize - getSize);
+        if (readLen > 0) {
+            getSize += readLen;
+            targetDataPoint += readLen;
+        } else {
+            LOGE("========read error ??????????????");
+        }
+    }
+
+    jintArray nativeArray = env->NewIntArray(targetSize / 4);
+    jint *native_array = env->GetIntArrayElements(nativeArray, NULL);
+    int index = 0;
+    for (int i = 0; i < targetSize;) {
+        int r = targetData[i];
+        int g = targetData[i + 1];
+        int b = targetData[i + 2];
+        int a = targetData[i + 3];
+        //转argb
+        native_array[index] = ((r << 16) | (g << 8) | (b) | (a << 24));
+        index++;
+        i = i + 4;
+    }
     env->ReleaseIntArrayElements(nativeArray, native_array, 0);
     return nativeArray;
 }

@@ -19,10 +19,15 @@ public class MainService extends Service implements FloatView.FloatViewListener 
 
     private static final String TAG = "MainService";
 
-
     private WindowManager mWindowManager;
     private WindowManager.LayoutParams mLp;
     private FloatView mFloatView;
+
+    private NativeHelper mNativeHelper;
+
+    private int mIsConnected = -1;
+
+    private int mScreenWidth, mScreenHeight;
 
     private void addFloatWindow() {
         mWindowManager = (WindowManager) getSystemService(WINDOW_SERVICE);
@@ -32,9 +37,9 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         mLp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
         mLp.gravity = Gravity.TOP | Gravity.LEFT;
         mLp.x = 100;
-        mLp.y = 300;
-        mLp.width = 80;
-        mLp.height = 50;
+        mLp.y = 100;
+        mLp.width = 280;
+        mLp.height = 80;
         mWindowManager.addView(mFloatView, mLp);
     }
 
@@ -46,6 +51,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
     @Override
     public void onCreate() {
         super.onCreate();
+        mNativeHelper = new NativeHelper();
         addFloatWindow();
     }
 
@@ -58,12 +64,10 @@ public class MainService extends Service implements FloatView.FloatViewListener 
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                NativeHelper mHelper = new NativeHelper();
-                int connected = mHelper.connectServer();
-                if (connected == 1) {
-
-                    int width = mHelper.getWidth();
-                    int height = mHelper.getHeight();
+                mIsConnected = mNativeHelper.connectServer();
+                if (mIsConnected == 1) {
+                    int width = mNativeHelper.getWidth();
+                    int height = mNativeHelper.getHeight();
                     Log.e(TAG, "=======runTestClient width is " + width + " , height is " + height);
 //                    char[] rgb = mHelper.getRgb(53, 53);//????????????? 应该是byte 还是char
 //                    Log.e(TAG, "=======runTestClient rgb : " + (int) rgb[0] + " , " + (int) rgb[1] + " , " + (int) rgb[2]);
@@ -83,7 +87,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
                     int[] pix = new int[w * h];
                     Log.e(TAG, "=======png : " + pix.length);
                     bitmap.getPixels(pix, 0, w, 0, 0, w, h);
-                    int[] ints = mHelper.testBitmap(pix, w, h);
+                    int[] ints = mNativeHelper.testBitmap(pix, w, h);
                     Log.e(TAG, "=======ints : " + ints.length);
                     Log.e(TAG, "=======ints pixels --- : " + ints[1024 * 53 + 53]);
 //
@@ -109,7 +113,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
 //                    Log.e(TAG, "=======rgb : " +rgb);
 //                    Log.e(TAG, "=======data : " +r+" , "+g+" , "+b+", "+a);
                 } else {
-                    Log.e(TAG, "=======connectServer failed : " + connected);
+                    Log.e(TAG, "=======connectServer failed : " + mIsConnected);
                 }
                 Log.e(TAG, "=======over: ");
             }
@@ -122,7 +126,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         SuHelper.getInstance().runSu();
         //SuHelper.getInstance().getScreencap();
         SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
-        runTestClient();
+        //runTestClient();
         return super.onStartCommand(intent, flags, startId);
     }
 
@@ -133,9 +137,22 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         mWindowManager.updateViewLayout(mFloatView, mLp);
     }
 
+    private void connectNativeServer() {
+        if(mIsConnected != 1) {
+            mIsConnected = mNativeHelper.connectServer();
+        }
+
+    }
     @Override
     public void onStarted() {
-
+        connectNativeServer();
+        if (mIsConnected == 1) {
+            mScreenWidth = mNativeHelper.getWidth();
+            mScreenHeight = mNativeHelper.getHeight();
+            Log.e(TAG, "=======native get width is  " + mScreenWidth + " , height is " + mScreenHeight);
+        } else {
+            Log.e("", "===========mIsConnected is false");
+        }
     }
 
     @Override
@@ -145,6 +162,46 @@ public class MainService extends Service implements FloatView.FloatViewListener 
 
     @Override
     public void onConfig() {
+        connectNativeServer();
+        if (mIsConnected == 1) {
+            Log.e("", "===========onConfig");
+            char[] rgb = mNativeHelper.getRgb(53, 53);
+            Log.e(TAG, "=======native rgb at [53,53] is : " + (int) rgb[0] + " , " + (int) rgb[1] + " , " + (int) rgb[2]);
+        } else {
+            Log.e("", "===========mIsConnected is false");
+        }
 
+
+    }
+
+    @Override
+    public void onTest() {
+        Log.e("", "===========onTest");
+        connectNativeServer();
+        if (mIsConnected != 1) {
+            Log.e("", "===========mIsConnected is false");
+            return;
+        }
+        if (mScreenWidth <= 0 || mScreenHeight <= 0) {
+            Log.e("", "===========mScreenWidth or  mScreenHeight is unknown");
+            return;
+        }
+        int[] ints = mNativeHelper.getBitmapPixels(mScreenWidth, mScreenHeight);
+        Log.e("", "===========onTest get pixels");
+        Bitmap bitmap2 = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
+        bitmap2.setPixels(ints, 0, mScreenWidth, 0, 0, mScreenWidth, mScreenHeight);
+        try {
+            long time = System.currentTimeMillis();
+            FileOutputStream out = new FileOutputStream("/data/user/0/com.asysbang.touch/files/"+time+".png");
+            bitmap2.compress(Bitmap.CompressFormat.PNG, 100, out);
+            Log.e(TAG, "=======pixel :/data/user/0/com.asysbang.touch/files/"+time+".png ");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public void onGo() {
+        Log.e("", "===========onGo==");
     }
 }

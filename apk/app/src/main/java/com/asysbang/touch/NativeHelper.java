@@ -22,4 +22,6 @@ public class NativeHelper {
 
 
     native int getNewPng();
+
+    native int[] getBitmapPixels(int mScreenWidth, int mScreenHeight);
 }
