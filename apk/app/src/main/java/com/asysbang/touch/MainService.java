@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import com.asysbang.touch.su.SuHelper;
 import com.asysbang.touch.ui.FloatView;
@@ -40,7 +41,13 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         mLp.y = 100;
         mLp.width = 280;
         mLp.height = 80;
-        mWindowManager.addView(mFloatView, mLp);
+        try {
+            mWindowManager.addView(mFloatView, mLp);
+        } catch (Exception e){
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(),"please allow this app show on other apps in settings",Toast.LENGTH_LONG).show();
+        }
+
     }
 
     @Override

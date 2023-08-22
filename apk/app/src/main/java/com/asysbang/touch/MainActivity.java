@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
             Log.e("", "======getFilesDir=" + dir.getAbsolutePath());
             File karlFile = new File(dir.getAbsolutePath() + "/karl");
             if (karlFile.exists()) {
-                Log.e("", "======exists=");
+                Log.e("", "======exists=11");
                 return;
             }
             AssetManager assetManager = getAssets();

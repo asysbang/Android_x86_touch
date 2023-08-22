@@ -17,6 +17,7 @@ int clientfd;
 extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
+    LOGE("========Java_com_asysbang_touch_NativeHelper_getWidth start");
     const char *msg = "widt";
     write(clientfd, msg, strlen(msg));
     //char buf[100];
@@ -187,9 +188,10 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     int py = y;
     write(clientfd, &py, sizeof(py));
 //??????????????????????????????????怎么转换？？？？？？？？？？？？？？
-    unsigned char *buf;
-    read(clientfd, buf, 3);
-    LOGE("========native getRgb is 000 [%d,%d,%d]", buf[0], buf[1], buf[2]);
+    unsigned char buf[3];
+    ssize_t redLen = read(clientfd, buf, sizeof (buf));
+    LOGE("========native getRgb is 000 [%ld,%ld,%ld]", buf[0], buf[1], buf[2]);
+    LOGE("========native getRgb redLen %ld", redLen);
     jcharArray nativeArray = (*env).NewCharArray(3);
     jchar *nByte = (*env).GetCharArrayElements(nativeArray, NULL);
     for (int i = 0; i < 3; i++) {
@@ -296,6 +298,8 @@ Java_com_asysbang_touch_NativeHelper_getBitmapPixels(JNIEnv *env, jobject thiz,j
         index++;
         i = i + 4;
     }
+    LOGE("========read 1111");
     env->ReleaseIntArrayElements(nativeArray, native_array, 0);
+    LOGE("========read 222");
     return nativeArray;
 }
