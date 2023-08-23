@@ -39,7 +39,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         mLp.gravity = Gravity.TOP | Gravity.LEFT;
         mLp.x = 100;
         mLp.y = 100;
-        mLp.width = 280;
+        mLp.width = 380;
         mLp.height = 80;
         try {
             mWindowManager.addView(mFloatView, mLp);
@@ -132,7 +132,9 @@ public class MainService extends Service implements FloatView.FloatViewListener 
         Log.e(TAG, "=======onStartCommand:" + getFilesDir().getAbsolutePath());
         SuHelper.getInstance().runSu();
         //SuHelper.getInstance().getScreencap();
-        SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
+//        SuHelper.getInstance().runCmd("sh " + getFilesDir().getAbsolutePath() + "/run.sh\n");
+        SuHelper.getInstance().runCmd("chmod 777 /data/user/0/com.asysbang.touch/files/karl\n");
+        SuHelper.getInstance().runCmd("/data/user/0/com.asysbang.touch/files/karl\n");
         //runTestClient();
         return super.onStartCommand(intent, flags, startId);
     }
@@ -184,6 +186,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
     @Override
     public void onTest() {
         Log.e("", "===========onTest");
+        long time1 = System.currentTimeMillis();
         connectNativeServer();
         if (mIsConnected != 1) {
             Log.e("", "===========mIsConnected is false");
@@ -194,7 +197,7 @@ public class MainService extends Service implements FloatView.FloatViewListener 
             return;
         }
         int[] ints = mNativeHelper.getBitmapPixels(mScreenWidth, mScreenHeight);
-        Log.e("", "===========onTest get pixels");
+        Log.e("", "===========onTest get pixels is   "+(System.currentTimeMillis()-time1));
         Bitmap bitmap2 = Bitmap.createBitmap(mScreenWidth, mScreenHeight, Bitmap.Config.ARGB_8888);
         bitmap2.setPixels(ints, 0, mScreenWidth, 0, 0, mScreenWidth, mScreenHeight);
         try {
