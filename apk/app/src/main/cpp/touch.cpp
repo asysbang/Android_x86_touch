@@ -18,6 +18,7 @@ extern "C"
 JNIEXPORT jint JNICALL
 Java_com_asysbang_touch_NativeHelper_getWidth(JNIEnv *env, jobject thiz) {
     LOGE("========Java_com_asysbang_touch_NativeHelper_getWidth start");
+
     const char *msg = "widt";
     write(clientfd, msg, strlen(msg));
     //char buf[100];
@@ -52,23 +53,6 @@ Java_com_asysbang_touch_NativeHelper_getNewPng(JNIEnv *env, jobject thiz) {
     write(clientfd, msg, strlen(msg));
     LOGE("========getPng write over");
     //read(clientfd, &g, sizeof(g));
-    //unsigned char rgb_data[1024 * 768 *4];
-//    LOGE("========getPng111 %d ",sizeof(rgb_data));
-    //int read_len = read(clientfd, rgb_data, sizeof(rgb_data));
-    //LOGE("========getPng222 %d ",read_len);
-    //jintArray jntarray = (*env).NewIntArray(1024 * 768 * 4);
-    //数组转化为 jint* 类型
-    //jint *native_array = (*env).GetIntArrayElements(jntarray, NULL);
-
-//    unsigned char *buf;
-//    read(clientfd, buf, 3);
-//    LOGE("========native getRgb is 000 [%d,%d,%d]", buf[0], buf[1], buf[2]);
-//    jcharArray nativeArray = (*env).NewCharArray(3);
-//    jchar *nByte = (*env).GetCharArrayElements(nativeArray, NULL);
-//    for (int i = 0; i < 3; i++) {
-//        nByte[i] = buf[i];
-//    }
-
 
     int targetSize = 1024 * 4 * 768;
     LOGE("========read 1111");
@@ -144,39 +128,6 @@ Java_com_asysbang_touch_NativeHelper_connectServer(JNIEnv *env, jobject thiz) {
     return 1;
 }
 
-
-extern "C"
-JNIEXPORT jintArray JNICALL
-Java_com_asysbang_touch_NativeHelper_getRgbNew(JNIEnv *env, jobject thiz, jint x, jint y) {
-    LOGE("========Java_com_asysbang_touch_NativeHelper_getRgbNew");
-    const char *msg = "rgb1";
-    write(clientfd, msg, strlen(msg));
-    int px = x;
-    write(clientfd, &px, sizeof(px));
-    int py = y;
-    write(clientfd, &py, sizeof(py));
-//
-//    jbyteArray nativeArray = (*env).NewByteArray(3);
-//    jbyte* nByte  = (*env).GetByteArrayElements(nativeArray,NULL);
-//    read(clientfd, nByte, sizeof(nByte));
-
-    unsigned char r, g, b;
-    int read_len = read(clientfd, &r, sizeof(r));
-    read_len = read(clientfd, &g, sizeof(g));
-    read_len = read(clientfd, &b, sizeof(b));
-    LOGE("========native getRgb is  [%d,%d,%d]", r, g, b);
-
-    jintArray jntarray = (*env).NewIntArray(3);
-    //数组转化为 jint* 类型
-    jint *native_array = (*env).GetIntArrayElements(jntarray, NULL);
-    native_array[0] = r;
-    native_array[1] = g;
-    native_array[2] = b;
-    (*env).ReleaseIntArrayElements(jntarray, native_array, 0);
-    //返回
-    return jntarray;
-
-}
 extern "C"
 JNIEXPORT jcharArray JNICALL
 Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, jint y) {
@@ -188,7 +139,7 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     int py = y;
     write(clientfd, &py, sizeof(py));
 //??????????????????????????????????怎么转换？？？？？？？？？？？？？？
-    unsigned char buf[3];
+    unsigned char buf[300];
     ssize_t redLen = read(clientfd, buf, sizeof (buf));
     LOGE("========native getRgb is 000 [%ld,%ld,%ld]", buf[0], buf[1], buf[2]);
     LOGE("========native getRgb redLen %ld", redLen);
@@ -201,27 +152,7 @@ Java_com_asysbang_touch_NativeHelper_getRgb(JNIEnv *env, jobject thiz, jint x, j
     (*env).ReleaseCharArrayElements(nativeArray, nByte, 0);
     return nativeArray;
 }
-extern "C"
-JNIEXPORT jbyteArray JNICALL
-Java_com_asysbang_touch_NativeHelper_getRgb1(JNIEnv *env, jobject thiz, jint x, jint y) {
-    LOGE("========Java_com_asysbang_touch_NativeHelper_getRgb");
-    const char *msg = "rgb1";
-    write(clientfd, msg, strlen(msg));
-    int px = x;
-    write(clientfd, &px, sizeof(px));
-    int py = y;
-    write(clientfd, &py, sizeof(py));
-    unsigned char buf[3];
-    read(clientfd, buf, 3);
-    LOGE("========native getRgb is 111111 [%d,%d,  %d]", buf[0], buf[1], buf[2]);
-    jbyteArray nativeArray = (*env).NewByteArray(3);
-    (*env).SetByteArrayRegion(nativeArray, 0, 3, reinterpret_cast<const jbyte *>(buf));
-    LOGE("========native getRgb is 111111 [%d,%d,  %d]", nativeArray[0], nativeArray[1],
-         nativeArray[2]);
 
-
-    return nativeArray;
-}
 extern "C"
 JNIEXPORT jintArray JNICALL
 Java_com_asysbang_touch_NativeHelper_testBitmap(JNIEnv *env, jobject thiz, jintArray pix,

@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         copyAssets();
-        startMainService();
+
     }
 
     private void copyAssets() {
@@ -29,6 +29,7 @@ public class MainActivity extends AppCompatActivity {
             File karlFile = new File(dir.getAbsolutePath() + "/karl");
             if (karlFile.exists()) {
                 Log.e("", "======exists=11");
+                startMainService();
                 return;
             }
             AssetManager assetManager = getAssets();
@@ -51,11 +52,12 @@ public class MainActivity extends AppCompatActivity {
             fos.flush();
             fos.close();
             inputStream.close();
-
+            startMainService();
 
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
 
     }
 
